@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item 
+        android:id="@+id/dayMenuImportImage"
+        android:title="Import Image"/>
+    <item
+        android:id="@+id/dayMenuShare"
+        android:title="Share Day"/>
+    
+
+</menu>

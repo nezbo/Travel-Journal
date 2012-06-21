@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/blue"
+    android:orientation="vertical" >
+
+    <ImageButton
+        android:id="@+id/ib01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/ic_launcher" />
+
+    <ImageButton
+        android:id="@+id/ib02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/ib01"
+        android:layout_marginRight="50dp"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ib01"
+        android:layout_alignRight="@+id/ib01"
+        android:layout_below="@+id/ib01"
+        android:gravity="center"
+        android:text="@string/menu_option_one"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ib02"
+        android:layout_alignRight="@+id/ib02"
+        android:layout_below="@+id/ib02"
+        android:gravity="center"
+        android:text="@string/menu_option_two"
+        android:textColor="@color/black" />
+
+    <ImageButton
+        android:id="@+id/ib03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/ib01"
+        android:layout_below="@id/ib01"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/ic_launcher" />
+
+    <ImageButton
+        android:id="@+id/ib04"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/ib03"
+        android:layout_marginRight="50dp"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tv3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ib03"
+        android:layout_alignRight="@+id/ib03"
+        android:layout_below="@+id/ib03"
+        android:gravity="center"
+        android:text="@string/menu_option_three"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/tv4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ib04"
+        android:layout_alignRight="@+id/ib04"
+        android:layout_below="@+id/ib04"
+        android:gravity="center"
+        android:text="@string/menu_option_four"
+        android:textColor="@color/black" />
+
+</RelativeLayout>
