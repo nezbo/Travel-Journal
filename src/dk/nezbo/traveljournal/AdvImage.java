@@ -108,6 +108,7 @@ public class AdvImage {
 		} catch (Exception e) {
 			System.err.println("Unable to load image file: "
 					+ this.getFilename());
+			return null;
 		}
 
 		// if rotation is needed, do it in worker thread for next time
