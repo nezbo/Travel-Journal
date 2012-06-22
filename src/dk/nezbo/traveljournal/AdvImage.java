@@ -135,7 +135,7 @@ public class AdvImage {
 						e.printStackTrace();
 					} catch (OutOfMemoryError e) {
 						System.err
-								.println("ERROR: Image rotation failed because of memory");
+								.println("ERROR: Full Image rotation failed because of memory");
 					}
 				}
 

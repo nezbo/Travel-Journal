@@ -72,7 +72,7 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 				DateTime time = new DateTime();
 				TravelDay today = db.findOrCreateTravelDay(testTravel, time);
 				AdvImage image = new AdvImage(0,today.getId(), null, time, "", "");
-				//ImageLocationFinder.initiate(this, image, GPS_TIME); gps stuff
+				//ImageLocationFinder.initiate(this, image, 10); // get gps location in 10 seconds
 				File file2 = NezboUtils.generateFilePath(this, image);
 				
 				boolean success = file.renameTo(file2);
