@@ -1,10 +1,9 @@
 package dk.nezbo.traveljournal;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -89,41 +88,35 @@ public class AdvImage {
 		final int rotate = necessaryRotation(c, file);
 		// if(rotate != 0) rotateImageFile(c, rotate);
 
-		try {
-			// Get scaled version
-			BitmapFactory.Options options = new BitmapFactory.Options();
-			options.inJustDecodeBounds = true;
-			BitmapFactory.decodeFile(file, options);
-			options.inSampleSize = calcInSampleSize(options, 1024, 1024);
-			options.inJustDecodeBounds = false;
-			bitmap = BitmapFactory.decodeFile(file, options);
+		// Get scaled version
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(file, options);
+		options.inSampleSize = calcInSampleSize(options, 1024, 1024);
+		options.inJustDecodeBounds = false;
+		bitmap = BitmapFactory.decodeFile(file, options);
 
-			// rotate?
-			bitmap = rotateImage(c,bitmap,rotate);
+		// rotate?
+		bitmap = rotateImage(c, bitmap, rotate);
 
-			System.out.println("Bitmap loaded from file: size="
-					+ bitmap.getWidth() + "," + bitmap.getHeight());
-			
-			System.gc();
-		} catch (Exception e) {
-			System.err.println("Unable to load image file: "
-					+ this.getFilename());
-			return null;
-		}
+		System.out.println("Bitmap loaded from file: size=" + bitmap.getWidth()
+				+ "," + bitmap.getHeight());
+
+		System.gc();
 
 		// if rotation is needed, do it in worker thread for next time
-		if(rotate != 0){
-			Thread t = new Thread(new Runnable(){
+		if (rotate != 0) {
+			Thread t = new Thread(new Runnable() {
 
 				public void run() {
 					// load entire image
-					try{
+					try {
 						File imageFile = new File(getFilename());
 						Bitmap huge = Media.getBitmap(c.getContentResolver(),
-						Uri.fromFile(imageFile));
-						
-						huge = rotateImage(c,huge,rotate);
-						
+								Uri.fromFile(imageFile));
+
+						huge = rotateImage(c, huge, rotate);
+
 						// save bitmap properly
 						FileOutputStream out = new FileOutputStream(imageFile);
 						huge.compress(Bitmap.CompressFormat.PNG, 100, out);
@@ -134,12 +127,18 @@ public class AdvImage {
 						huge = null;
 						out = null;
 						System.gc();
-						
-					}catch(IOException e){
+
+						System.out
+								.println("Full Image successfully rotated and saved");
+
+					} catch (IOException e) {
 						e.printStackTrace();
+					} catch (OutOfMemoryError e) {
+						System.err
+								.println("ERROR: Image rotation failed because of memory");
 					}
 				}
-				
+
 			});
 			t.start();
 		}
@@ -152,15 +151,15 @@ public class AdvImage {
 			// rotate
 			Matrix m = new Matrix();
 			m.postRotate(rotate);
-			Bitmap rotImage = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-					bitmap.getHeight(), m, true);
+			Bitmap rotImage = Bitmap.createBitmap(bitmap, 0, 0,
+					bitmap.getWidth(), bitmap.getHeight(), m, true);
 			bitmap.recycle();
 
 			System.out.println("Image (id=" + getId()
 					+ ") rotated successfully");
-			
+
 			System.gc();
-			
+
 			return rotImage;
 		}
 		return bitmap;
@@ -221,11 +220,13 @@ public class AdvImage {
 				+ captureTime.asStringDay() + " filename=" + file + " title="
 				+ title + " desc=" + description + "]";
 	}
-	
-	public void recycle(){
-		if(bitmap != null){
+
+	public void recycle() {
+		if (bitmap != null) {
 			bitmap.recycle();
 			bitmap = null;
+			
+			System.out.println("Image Bitmap recycled.");
 		}
 	}
 }
