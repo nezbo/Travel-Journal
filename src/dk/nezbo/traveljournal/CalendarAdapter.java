@@ -1,13 +1,12 @@
 package dk.nezbo.traveljournal;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
@@ -15,19 +14,39 @@ public class CalendarAdapter extends BaseAdapter {
 
 	private DateTime focus;
 	private Context context;
-	private ArrayList<String> items;
-	private String[] days;
 
-	public CalendarAdapter(Context c, DateTime focus) {
+	private Travel travel;
+	private TravelDay[] items;
+	private DatabaseHelper db;
+
+	private String[] days;
+	private int firstDay;
+
+	public CalendarAdapter(Context c, DateTime focus, Travel travel) {
 		this.focus = focus;
 		context = c;
-		this.items = new ArrayList<String>();
-
+		this.travel = travel;
+		
+		// get content
 		refreshDays();
+		
+		db = new DatabaseHelper(c);
+		getContentFromDB();
 	}
 
-	public void setItems(ArrayList<String> items) {
-		this.items = items;
+	private TravelDay traveldayForPosition(int position, DateTime target) {
+		if (position < firstDay)
+			return null;
+
+		for (TravelDay t : items) {
+			if (t != null && t.getDateTime().sameDay(target))
+				return t;
+		}
+		return null;
+	}
+	
+	public void getContentFromDB(){
+		this.items = db.getTravelDays(travel);
 	}
 
 	public int getCount() {
@@ -42,7 +61,27 @@ public class CalendarAdapter extends BaseAdapter {
 		return 0;
 	}
 
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
+		boolean start = false;
+		boolean end = false;
+		boolean text = false;
+		boolean images = false;
+
+		if (position >= firstDay /*&& !days[position].equals("")*/) {
+			int day = Integer.parseInt(days[position]);
+			DateTime target = new DateTime(focus.getYear(), focus.getMonth(),
+					day, 0, 0);
+
+			TravelDay travelday = traveldayForPosition(position, target);
+
+			start = travel.getStart().sameDay(target);
+			end = travel.getEnd().sameDay(target);
+			if (travelday != null) {
+				text = !travelday.getText().equals("");
+				images = db.hasImages(travelday.getId());
+			}
+		}
+
 		View v = convertView;
 		TextView dayView;
 
@@ -58,30 +97,49 @@ public class CalendarAdapter extends BaseAdapter {
 			dayView.setClickable(false);
 			dayView.setFocusable(false);
 		} else {
-			// TODO: DO SOMETHING
+			v.setOnClickListener(new OnClickListener(){
+
+				public void onClick(View v) {
+					System.out.println("Calendar Day Clicked!");
+					
+					int day = Integer.parseInt(days[position]);
+					DateTime target = new DateTime(focus.getYear(), focus.getMonth(),
+							day, 0, 0);
+					TravelDay travelday = traveldayForPosition(position,target);
+					if(travelday != null){
+						NezboUtils.goToTravelDay(context, travelday.getId());
+					}else{ // not created yet
+						TravelDay current = db.findOrCreateTravelDay(travel, target);
+						NezboUtils.goToTravelDay(context, current.getId());
+					}
+					
+				}
+			});
 		}
 		dayView.setText(days[position]);
 
-		// TODO: show custom stuff it something on day (R.id.ivCalDateImage)
+		v.findViewById(R.id.ivCalDateImage1).setVisibility(
+				start ? View.VISIBLE : View.INVISIBLE);
+		v.findViewById(R.id.ivCalDateImage2).setVisibility(
+				end ? View.VISIBLE : View.INVISIBLE);
+		v.findViewById(R.id.ivCalDateImage3).setVisibility(
+				text ? View.VISIBLE : View.INVISIBLE);
+		v.findViewById(R.id.ivCalDateImage4).setVisibility(
+				images ? View.VISIBLE : View.INVISIBLE);
+
 		return v;
 	}
 
 	public void refreshDays() {
-		System.out.println("CALENDAR REFRESH: " + focus.toString());
-		items.clear();
-
 		Calendar cal = focus.extractCalendar();
 		int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-		int firstDay = (int) cal.get(Calendar.DAY_OF_WEEK);
+		firstDay = (int) cal.get(Calendar.DAY_OF_WEEK);
 
 		if (firstDay == 1) { // sunday
 			firstDay = 6;
 		} else {
 			firstDay -= 2;
 		}
-
-		System.out.println("lastDay=" + lastDay);
-		System.out.println("firstDay=" + firstDay);
 
 		days = new String[lastDay + firstDay];
 
@@ -94,5 +152,9 @@ public class CalendarAdapter extends BaseAdapter {
 			days[j] = "" + dayNumber;
 			dayNumber++;
 		}
+	}
+	
+	public void close(){
+		db.close();
 	}
 }

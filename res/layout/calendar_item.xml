@@ -7,7 +7,6 @@
     android:padding="8dp" >
 
     <TextView
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/tvCalDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,12 +15,58 @@
         android:textStyle="bold" >
     </TextView>
 
-    <ImageView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ivCalDateImage"
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_launcher"
-        android:visibility="invisible" />
+        android:weightSum="2" >
+
+        <TableRow
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="2" >
+
+            <ImageView
+                android:id="@+id/ivCalDateImage1"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/start"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/ivCalDateImage2"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/end"
+                android:visibility="invisible" />
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="2" >
+
+            <ImageView
+                android:id="@+id/ivCalDateImage3"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/envelope"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/ivCalDateImage4"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/photo"
+                android:visibility="invisible" />
+        </TableRow>
+    </TableLayout>
 
 </LinearLayout>

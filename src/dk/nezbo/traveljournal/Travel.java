@@ -16,6 +16,9 @@ public class Travel{
 		this.end = end;
 		this.description = description;
 		days = new ArrayList<Integer>();
+		
+		start.setBeginning();
+		end.setBeginning();
 	}
 	
 	public int getId(){

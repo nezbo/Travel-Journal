@@ -33,6 +33,18 @@ public class TravelActivity extends Activity {
 		init();
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		db.close();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		this.refreshCalendar();
+	}
+
 	private void init() {
 		db = new DatabaseHelper(this);
 		int id = getIntent().getExtras().getInt("id");
@@ -43,13 +55,13 @@ public class TravelActivity extends Activity {
 		if (now.between(travel.getStart(), travel.getEnd())) {
 			focus = now;
 		} else {
-			focus = travel.getStart();
+			focus = (DateTime) travel.getStart().clone();
 		}
 
 		// derping
 		GridView gridview = (GridView) findViewById(R.id.gvCalGrid);
 		
-		adapter = new CalendarAdapter(this, focus);
+		adapter = new CalendarAdapter(this, focus,travel);
 		gridview.setAdapter(adapter);
 
 		handler = new Handler();
@@ -93,6 +105,7 @@ public class TravelActivity extends Activity {
 		title.setText(focus.asStringMonthYear());
 		
 		adapter.refreshDays();
+		adapter.getContentFromDB();
 		adapter.notifyDataSetChanged();
 		//handler.post(calendarUpdater);
 	}

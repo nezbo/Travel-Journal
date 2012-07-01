@@ -154,6 +154,11 @@ public class DateTime implements Comparable<DateTime> {
 		return new DateTime(getYear(), getMonth(), getDate(), 0, 0);
 	}
 	
+	public void setBeginning(){
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+	}
+	
 	public DateTime getNextDay(){
 		DateTime next = new DateTime(getYear(),getMonth(),getDate(),0,0);
 		next.addDays(1);
@@ -163,6 +168,11 @@ public class DateTime implements Comparable<DateTime> {
 	@Override
 	public String toString() {
 		return formatter.format(cal.getTime());
+	}
+	
+	@Override
+	public Object clone(){
+		return new DateTime(getYear(),getMonth(),getDate(),getHour(),getMinute());
 	}
 
 	public String asStringDay() {

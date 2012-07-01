@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
 
-	private static final int VERSION = 11;
+	private static final int VERSION = 12;
 	private static final String dbName = "traveljournal";
 	
 	public DatabaseHelper(Context context) {
@@ -44,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		
 		Travel travel = new Travel(id,text,start,end);
 		
+		/*
 		// put ids for days
 		ArrayList<Integer> days = travel.getDays();
 		cur = db.rawQuery("SELECT id FROM TravelDay WHERE travelId=?", new String[]{String.valueOf(travel.getId())});
@@ -51,7 +52,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		while(lastAnswer){
 			days.add(cur.getInt(0));
 			cur.moveToNext();
-		}
+		}*/
 		
 		cur.close();
 		db.close();
@@ -289,5 +290,29 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		}
 		
 		return images;
+	}
+	
+	public boolean hasImages(int dayId){
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cur = db.rawQuery("SELECT id FROM Image WHERE dayId=?", new String[]{String.valueOf(dayId)});
+		
+		boolean result = cur.moveToFirst();
+		cur.close();
+		db.close();
+		
+		return result;
+	}
+	
+	public TravelDay[] getTravelDays(Travel t){
+		ArrayList<TravelDay> days = new ArrayList<TravelDay>();
+		
+		DateTime current = (DateTime) t.getStart().clone();
+		while(current.before(t.getEnd()) || current.sameDay(t.getEnd())){
+			days.add(this.findTravelDay(t, current));
+			
+			current.addDays(1);
+		}
+		
+		return days.toArray(new TravelDay[days.size()]);
 	}
 }
