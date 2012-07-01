@@ -46,7 +46,7 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 		testTravel = db.getCurrentTravel();
 		if (testTravel == null) {
 			testTravel = new Travel(0, "", new DateTime(), nextWeek);
-			db.saveTravel(testTravel);
+			db.createTravel(testTravel);
 		}
 
 		bToday = (ImageButton) findViewById(R.id.ib01);
@@ -64,27 +64,29 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
-		switch(requestCode){
+		switch (requestCode) {
 		case 1:
 			if (resultCode == RESULT_OK) {
 				final File file = getTempFile(this);
-				
+
 				DateTime time = new DateTime();
 				TravelDay today = db.findOrCreateTravelDay(testTravel, time);
-				AdvImage image = new AdvImage(0,today.getId(), null, time, "", "");
-				//ImageLocationFinder.initiate(this, image, 10); // get gps location in 10 seconds
+				AdvImage image = new AdvImage(0, today.getId(), null, time, "",
+						"");
+				// ImageLocationFinder.initiate(this, image, 10); // get gps
+				// location in 10 seconds
 				File file2 = NezboUtils.generateFilePath(this, image);
-				
+
 				boolean success = file.renameTo(file2);
 
-				if(success){
+				if (success) {
 					image.setFilename(file2.getAbsolutePath());
 					int createdId = db.createImage(image);
-					
-					if(createdId != -1){
-						NezboUtils.goToImage(this,createdId);
+
+					if (createdId != -1) {
+						NezboUtils.goToImage(this, createdId);
 					}
-				}else{
+				} else {
 					System.err.println("Image renaming failed");
 				}
 				image.recycle();
@@ -109,7 +111,7 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 		case R.id.ib01: // bToday
 			TravelDay day = db
 					.findOrCreateTravelDay(testTravel, new DateTime());
-			NezboUtils.goToTravelDay(this,day.getId());
+			NezboUtils.goToTravelDay(this, day.getId());
 			break;
 		case R.id.ib02: // bCamera
 			final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -118,6 +120,7 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 			startActivityForResult(intent, 1);
 			break;
 		case R.id.ib03: // bCurrent
+			NezboUtils.goToTravel(this, testTravel.getId());
 
 			break;
 		case R.id.ib04: // bAllTravels

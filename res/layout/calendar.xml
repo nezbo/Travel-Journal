@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue"
+    android:orientation="vertical"
+    android:padding="5dp" >
+
+    <TextView
+        android:id="@+id/tvTravelTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:gravity="center"
+        android:text="Travel Title"
+        android:layout_marginBottom="10dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="32dp" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/darkblue"
+        android:stretchColumns="1" >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/bCalPrevious"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="&lt;&lt;" />
+
+            <TextView
+                android:id="@+id/tvCalMonthYear"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="Month (Year)"
+                android:textColor="@color/white"
+                android:textSize="24dp" />
+
+            <Button
+                android:id="@+id/bCalNext"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text=">>" />
+        </TableRow>
+    </TableLayout>
+
+    <GridView
+        android:id="@+id/gvCalGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:numColumns="7" >
+    </GridView>
+
+</LinearLayout>

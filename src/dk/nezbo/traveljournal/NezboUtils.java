@@ -7,8 +7,6 @@ import java.io.OutputStream;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -24,6 +22,14 @@ public class NezboUtils {
 	
 	public static void goToImage(Context c, int id){
 		Intent next = new Intent("dk.nezbo.traveljournal.IMAGE");
+		Bundle bundle = new Bundle();
+		bundle.putInt("id", id);
+		next.putExtras(bundle);
+		c.startActivity(next);
+	}
+	
+	public static void goToTravel(Context c, int id) {
+		Intent next = new Intent("dk.nezbo.traveljournal.TRAVEL");
 		Bundle bundle = new Bundle();
 		bundle.putInt("id", id);
 		next.putExtras(bundle);

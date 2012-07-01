@@ -97,6 +97,14 @@ public class DateTime implements Comparable<DateTime> {
 	public void setMinute(int minute) {
 		cal.set(Calendar.MINUTE, minute);
 	}
+	
+	public void addYears(int number){
+		cal.add(Calendar.YEAR, number);
+	}
+	
+	public void addMonths(int number){
+		cal.add(Calendar.MONTH, number);
+	}
 
 	public void addDays(int number) {
 		cal.add(Calendar.DATE, number);
@@ -161,11 +169,19 @@ public class DateTime implements Comparable<DateTime> {
 		return getMonthText()+" "+getDateText();
 	}
 	
+	public String asStringMonthYear(){
+		return getMonthText() +" ("+getYear()+")";
+	}
+	
 	public String asStringTime(){
 		return time.format(cal.getTime());
 	}
 	
 	public String asStringLong(){
 		return asStringDay() + " " + asStringTime();
+	}
+	
+	public Calendar extractCalendar(){
+		return (Calendar) cal.clone();
 	}
 }

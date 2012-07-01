@@ -95,6 +95,8 @@ public class AdvImage {
 		options.inSampleSize = calcInSampleSize(options, 1024, 1024);
 		options.inJustDecodeBounds = false;
 		bitmap = BitmapFactory.decodeFile(file, options);
+		
+		System.out.println(getFilename());
 
 		// rotate?
 		bitmap = rotateImage(c, bitmap, rotate);
@@ -203,7 +205,7 @@ public class AdvImage {
 			width /= 2;
 			inSampleSize *= 2;
 		}
-
+		//System.out.println("Size going to be: w="+width+", h="+height);
 		return inSampleSize;
 	}
 
