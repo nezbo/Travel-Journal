@@ -26,10 +26,10 @@ public class CalendarAdapter extends BaseAdapter {
 		this.focus = focus;
 		context = c;
 		this.travel = travel;
-		
+
 		// get content
 		refreshDays();
-		
+
 		db = new DatabaseHelper(c);
 		getContentFromDB();
 	}
@@ -44,8 +44,8 @@ public class CalendarAdapter extends BaseAdapter {
 		}
 		return null;
 	}
-	
-	public void getContentFromDB(){
+
+	public void getContentFromDB() {
 		this.items = db.getTravelDays(travel);
 	}
 
@@ -67,7 +67,7 @@ public class CalendarAdapter extends BaseAdapter {
 		boolean text = false;
 		boolean images = false;
 
-		if (position >= firstDay /*&& !days[position].equals("")*/) {
+		if (position >= firstDay /* && !days[position].equals("") */) {
 			int day = Integer.parseInt(days[position]);
 			DateTime target = new DateTime(focus.getYear(), focus.getMonth(),
 					day, 0, 0);
@@ -97,22 +97,29 @@ public class CalendarAdapter extends BaseAdapter {
 			dayView.setClickable(false);
 			dayView.setFocusable(false);
 		} else {
-			v.setOnClickListener(new OnClickListener(){
+			v.setOnClickListener(new OnClickListener() {
 
 				public void onClick(View v) {
 					System.out.println("Calendar Day Clicked!");
-					
+
 					int day = Integer.parseInt(days[position]);
-					DateTime target = new DateTime(focus.getYear(), focus.getMonth(),
-							day, 0, 0);
-					TravelDay travelday = traveldayForPosition(position,target);
-					if(travelday != null){
-						NezboUtils.goToTravelDay(context, travelday.getId());
-					}else{ // not created yet
-						TravelDay current = db.findOrCreateTravelDay(travel, target);
-						NezboUtils.goToTravelDay(context, current.getId());
+					DateTime target = new DateTime(focus.getYear(), focus
+							.getMonth(), day, 0, 0);
+
+					if (target.dayBetween(travel.getStart(), travel.getEnd())) {
+						TravelDay travelday = traveldayForPosition(position,
+								target);
+						if (travelday != null) {
+							NezboUtils.goToTravelDay(context, travelday.getId());
+						} else { // not created yet
+							TravelDay current = db.findOrCreateTravelDay(
+									travel, target);
+							NezboUtils.goToTravelDay(context, current.getId());
+						}
+					} else {
+						System.out
+								.println("Calendar Day outside of travel clicked!, nothing will happen...");
 					}
-					
 				}
 			});
 		}
@@ -153,8 +160,8 @@ public class CalendarAdapter extends BaseAdapter {
 			dayNumber++;
 		}
 	}
-	
-	public void close(){
+
+	public void close() {
 		db.close();
 	}
 }

@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
 
-	private static final int VERSION = 12;
+	private static final int VERSION = 13;
 	private static final String dbName = "traveljournal";
 	
 	public DatabaseHelper(Context context) {
@@ -19,7 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE Travel (id INTEGER PRIMARY KEY AUTOINCREMENT, desc TEXT, start DATETIME, end DATETIME)");
+		db.execSQL("CREATE TABLE Travel (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, desc TEXT, start DATETIME, end DATETIME)");
 		db.execSQL("CREATE TABLE TravelDay (id INTEGER PRIMARY KEY AUTOINCREMENT, travelId INTEGER, day DATETIME, text TEXT)");
 		db.execSQL("CREATE TABLE Image (id INTEGER PRIMARY KEY AUTOINCREMENT, dayId INTEGER, file TEXT, title TEXT, desc TEXT, time DATETIME)");
 	}
@@ -35,24 +35,15 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	
 	public Travel getTravel(int id){
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cur = db.rawQuery("SELECT desc, start, end FROM Travel WHERE id=?", new String[]{String.valueOf(id)});
+		Cursor cur = db.rawQuery("SELECT title, desc, start, end FROM Travel WHERE id=?", new String[]{String.valueOf(id)});
 		if(!cur.moveToFirst()) return null;
 		
-		String text = cur.getString(0);
-		DateTime start = new DateTime(cur.getString(1));
-		DateTime end = new DateTime(cur.getString(2));
+		String title = cur.getString(0);
+		String text = cur.getString(1);
+		DateTime start = new DateTime(cur.getString(2));
+		DateTime end = new DateTime(cur.getString(3));
 		
-		Travel travel = new Travel(id,text,start,end);
-		
-		/*
-		// put ids for days
-		ArrayList<Integer> days = travel.getDays();
-		cur = db.rawQuery("SELECT id FROM TravelDay WHERE travelId=?", new String[]{String.valueOf(travel.getId())});
-		boolean lastAnswer = cur.moveToFirst();
-		while(lastAnswer){
-			days.add(cur.getInt(0));
-			cur.moveToNext();
-		}*/
+		Travel travel = new Travel(id,title,text,start,end);
 		
 		cur.close();
 		db.close();
@@ -88,6 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	public void saveTravel(Travel existing){
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
+		cv.put("title", existing.getTitle());
 		cv.put("desc", existing.getDescription());
 		cv.put("start", existing.getStart().toString());
 		cv.put("end", existing.getEnd().toString());
@@ -96,9 +88,20 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		db.close();
 	}
 	
+	public void deleteTravel(Travel travel) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		int rows = db.delete("Travel", "id=?", new String[]{String.valueOf(travel.getId())});
+		
+		db.close();
+		System.out.println("Travel deleted: "+travel.toString()+ "("+rows+" rows affected)");
+		//TODO
+		System.out.println("WARNING NOTHING BELOW DELETED");
+	}
+	
 	public void createTravel(Travel newTravel){
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
+		cv.put("title", newTravel.getTitle());
 		cv.put("desc", newTravel.getDescription());
 		cv.put("start", newTravel.getStart().toString());
 		cv.put("end", newTravel.getEnd().toString());
@@ -107,7 +110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		
 		// placing id
 		db = this.getReadableDatabase();
-		Cursor cur = db.rawQuery("SELECT id FROM Travel WHERE desc=? AND start=? AND end=?", new String[]{newTravel.getDescription(),newTravel.getStart().toString(), newTravel.getEnd().toString()});
+		Cursor cur = db.rawQuery("SELECT id FROM Travel WHERE title=? AND desc=? AND start=? AND end=?", new String[]{newTravel.getTitle(),newTravel.getDescription(),newTravel.getStart().toString(), newTravel.getEnd().toString()});
 		cur.moveToFirst();
 		newTravel.setId(cur.getInt(0));
 		
@@ -191,7 +194,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		db.close();
 	}
 
-	public int createImage(AdvImage image) {
+	public void createImage(AdvImage image) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put("dayId", image.getTravelDayId());
@@ -203,7 +206,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		System.out.println("New Image saved: "+image.toString());
 		db.close();
 		
-		return getImageId(image);
+		image.setId(getImageId(image));
 	}
 	
 	public void saveImage(AdvImage image) {

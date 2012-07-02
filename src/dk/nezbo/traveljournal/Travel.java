@@ -8,12 +8,14 @@ public class Travel{
 	private DateTime start;
 	private DateTime end;
 	private ArrayList<Integer> days;
+	private String title;
 	private String description;
 	
-	public Travel(int id, String description, DateTime start, DateTime end){
+	public Travel(int id, String title, String description, DateTime start, DateTime end){
 		this.id = id;
 		this.start = start;
 		this.end = end;
+		this.title = title;
 		this.description = description;
 		days = new ArrayList<Integer>();
 		
@@ -45,6 +47,14 @@ public class Travel{
 		return end;
 	}
 	
+	public void setTitle(String newTitle){
+		title = newTitle;
+	}
+	
+	public String getTitle(){
+		return title;
+	}
+	
 	public void setDescription(String desc){
 		description = desc;
 	}
@@ -59,14 +69,14 @@ public class Travel{
 	
 	public TravelDay getDate(DateTime date, DatabaseHelper db){
 		// return null if outside travel limits
-		if(!date.between(start, end) || end.sameDay(date)) return null;
+		if(!date.dayBetween(start, end)) return null;
 		
 		// get matching day
 		return db.findOrCreateTravelDay(this, date);
 	}
 	
 	public String toString(){
-		return "[Travel: id="+id+" start="+start.asStringDay()+" end="+end.asStringDay()+" desc="+description+"]";
+		return "[Travel: id="+id+" start="+start.asStringDay()+" end="+end.asStringDay()+" title="+title+" desc="+description+"]";
 	}
 	/*
 	public ArrayList<AdvImage> deleteDay(DateTime date){
@@ -101,7 +111,7 @@ public class Travel{
 	}*/
 	
 	public boolean isCurrent(){
-		return new DateTime().between(start, end);
+		return new DateTime().dayBetween(start, end);
 	}
 
 

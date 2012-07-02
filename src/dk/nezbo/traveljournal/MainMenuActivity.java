@@ -21,13 +21,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class MainMenuActivity extends Activity implements OnClickListener {
 
 	private DatabaseHelper db;
-	private Travel testTravel;
+	private Travel currentTravel = null;
 
 	private ImageButton bToday, bCamera, bCurrent, bAllTravels;
+	private TextView tvCurrent;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -37,27 +39,42 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 		init();
 	}
 
-	private void init() {
-		db = new DatabaseHelper(this);
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		db.close();
+	}
 
-		// TEST
-		DateTime nextWeek = new DateTime();
-		nextWeek.addDays(7);
-		testTravel = db.getCurrentTravel();
-		if (testTravel == null) {
-			testTravel = new Travel(0, "", new DateTime(), nextWeek);
-			db.createTravel(testTravel);
-		}
+	@Override
+	protected void onResume() {
+		super.onResume();
+		init();
+	}
+
+	private void init() {
+		if(db == null) db = new DatabaseHelper(this);
 
 		bToday = (ImageButton) findViewById(R.id.ib01);
 		bCamera = (ImageButton) findViewById(R.id.ib02);
 		bCurrent = (ImageButton) findViewById(R.id.ib03);
 		bAllTravels = (ImageButton) findViewById(R.id.ib04);
+		tvCurrent = (TextView) findViewById(R.id.tvCurrent);
 
+		// See if we have a current travel
+		currentTravel = db.getCurrentTravel();
+		
+		// set varying content
+		bToday.setEnabled(currentTravel != null);
+		bCamera.setEnabled(currentTravel != null);
+		tvCurrent.setText(currentTravel == null ? R.string.menu_option_create_new : R.string.menu_option_three);
+
+		// set listeners
 		bToday.setOnClickListener(this);
 		bCamera.setOnClickListener(this);
 		bCurrent.setOnClickListener(this);
 		bAllTravels.setOnClickListener(this);
+
 	}
 
 	@Override
@@ -70,7 +87,7 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 				final File file = getTempFile(this);
 
 				DateTime time = new DateTime();
-				TravelDay today = db.findOrCreateTravelDay(testTravel, time);
+				TravelDay today = db.findOrCreateTravelDay(currentTravel, time);
 				AdvImage image = new AdvImage(0, today.getId(), null, time, "",
 						"");
 				// ImageLocationFinder.initiate(this, image, 10); // get gps
@@ -81,10 +98,10 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 
 				if (success) {
 					image.setFilename(file2.getAbsolutePath());
-					int createdId = db.createImage(image);
+					db.createImage(image);
 
-					if (createdId != -1) {
-						NezboUtils.goToImage(this, createdId);
+					if (image.getId() != -1) {
+						NezboUtils.goToImage(this, image.getId());
 					}
 				} else {
 					System.err.println("Image renaming failed");
@@ -109,8 +126,8 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.ib01: // bToday
-			TravelDay day = db
-					.findOrCreateTravelDay(testTravel, new DateTime());
+			TravelDay day = db.findOrCreateTravelDay(currentTravel,
+					new DateTime());
 			NezboUtils.goToTravelDay(this, day.getId());
 			break;
 		case R.id.ib02: // bCamera
@@ -120,7 +137,16 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 			startActivityForResult(intent, 1);
 			break;
 		case R.id.ib03: // bCurrent
-			NezboUtils.goToTravel(this, testTravel.getId());
+			if(currentTravel != null){
+				NezboUtils.goToTravel(this, currentTravel.getId());
+			}else{
+				DateTime nextWeek = new DateTime();
+				nextWeek.addDays(7);
+				currentTravel = new Travel(0,"Untitled Travel","",new DateTime(),nextWeek);
+				db.createTravel(currentTravel);
+				
+				NezboUtils.goToTravel(this, currentTravel.getId());
+			}
 
 			break;
 		case R.id.ib04: // bAllTravels

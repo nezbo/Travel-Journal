@@ -5,6 +5,7 @@
     <string name="menu_option_one">Today</string>
     <string name="menu_option_two">Camera</string>
     <string name="menu_option_three">Current Travel</string>
+    <string name="menu_option_create_new">Create New Travel</string>
     <string name="menu_option_four">My Travels</string>
 
     <color name="blue">#69D2E7</color>

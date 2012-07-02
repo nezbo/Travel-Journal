@@ -1,18 +1,25 @@
 package dk.nezbo.traveljournal;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
 
-public class TravelActivity extends Activity {
+public class TravelActivity extends Activity implements OnClickListener {
 
 	private Travel travel;
 	private DateTime focus;
@@ -21,9 +28,80 @@ public class TravelActivity extends Activity {
 	private CalendarAdapter adapter;
 	private Handler handler;
 
-	private TextView title;
+	private TextView monthYear;
 	private Button previous;
 	private Button next;
+	private TextView title;
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		boolean result = super.onCreateOptionsMenu(menu);
+		MenuInflater blow = this.getMenuInflater();
+		blow.inflate(R.menu.travel_menu, menu);
+
+		return result;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+
+		switch (item.getItemId()) {
+		case R.id.travelChangeStart:
+			DateTime start = travel.getStart();
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert.setTitle("Select Start Date");
+
+			final DatePicker date = new DatePicker(this);
+			date.init(start.getYear(), start.getMonth() - 1, start.getDate(),
+					null);
+
+			alert.setView(date);
+			alert.setPositiveButton("Ok",
+					new DialogInterface.OnClickListener() {
+
+						public void onClick(DialogInterface dialog, int which) {
+							DateTime result = new DateTime(date.getYear(), date
+									.getMonth() + 1, date.getDayOfMonth(), 0, 0);
+							travel.setStart(result);
+							refreshCalendar();
+						}
+					});
+
+			alert.show();
+
+			break;
+		case R.id.travelChangeEnd:
+			DateTime end = travel.getEnd();
+			AlertDialog.Builder a = new AlertDialog.Builder(this);
+			a.setTitle("Select End Date");
+
+			final DatePicker d = new DatePicker(this);
+			d.init(end.getYear(), end.getMonth() - 1, end.getDate(), null);
+
+			a.setView(d);
+			a.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+				public void onClick(DialogInterface dialog, int which) {
+					DateTime result = new DateTime(d.getYear(),
+							d.getMonth() + 1, d.getDayOfMonth(), 0, 0);
+					travel.setEnd(result);
+					refreshCalendar();
+				}
+			});
+
+			a.show();
+
+			break;
+		case R.id.travelDelete:
+			db.deleteTravel(travel);
+			finish();
+			break;
+		}
+
+		return true;
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +114,8 @@ public class TravelActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		db.saveTravel(travel);
+
 		db.close();
 	}
 
@@ -52,7 +132,7 @@ public class TravelActivity extends Activity {
 
 		// show start of travel or today?
 		DateTime now = new DateTime();
-		if (now.between(travel.getStart(), travel.getEnd())) {
+		if (now.dayBetween(travel.getStart(), travel.getEnd())) {
 			focus = now;
 		} else {
 			focus = (DateTime) travel.getStart().clone();
@@ -60,15 +140,18 @@ public class TravelActivity extends Activity {
 
 		// derping
 		GridView gridview = (GridView) findViewById(R.id.gvCalGrid);
-		
-		adapter = new CalendarAdapter(this, focus,travel);
+
+		adapter = new CalendarAdapter(this, focus, travel);
 		gridview.setAdapter(adapter);
 
 		handler = new Handler();
-		//handler.post(calendarUpdater);
+		// handler.post(calendarUpdater);
 
-		title = (TextView) findViewById(R.id.tvCalMonthYear);
-		title.setText(focus.asStringMonthYear());
+		monthYear = (TextView) findViewById(R.id.tvCalMonthYear);
+		monthYear.setText(focus.asStringMonthYear());
+		
+		title = (TextView) findViewById(R.id.tvTravelTitle);
+		title.setText(travel.getTitle().equals("") ? "Untitled Travel" : travel.getTitle());
 
 		previous = (Button) findViewById(R.id.bCalPrevious);
 		next = (Button) findViewById(R.id.bCalNext);
@@ -91,23 +174,36 @@ public class TravelActivity extends Activity {
 
 		});
 
-		gridview.setOnItemClickListener(new OnItemClickListener() {
-
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				//TODO
-			}
-
-		});
+		title.setOnClickListener(this);
 	}
-	
-	public void refreshCalendar(){
-		title.setText(focus.asStringMonthYear());
-		
+
+	public void refreshCalendar() {
+		monthYear.setText(focus.asStringMonthYear());
+
 		adapter.refreshDays();
 		adapter.getContentFromDB();
 		adapter.notifyDataSetChanged();
-		//handler.post(calendarUpdater);
 	}
 
+	public void onClick(View v) {
+		if (v == title) {
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert.setTitle("Travel Title");
+
+			final EditText input = new EditText(this);
+			input.setText(travel.getTitle());
+			alert.setView(input);
+
+			alert.setPositiveButton("Ok",
+					new DialogInterface.OnClickListener() {
+
+						public void onClick(DialogInterface dialog, int which) {
+							travel.setTitle(input.getText().toString());
+							title.setText(travel.getTitle());
+						}
+					});
+
+			alert.show();
+		}
+	}
 }

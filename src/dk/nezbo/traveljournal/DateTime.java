@@ -125,7 +125,7 @@ public class DateTime implements Comparable<DateTime> {
 	public boolean after(DateTime that) {
 		return this.compareTo(that) == 1;
 	}
-
+	
 	public boolean between(DateTime first, DateTime second) {
 		if (first.compareTo(second) == 1) {
 			DateTime temp = first;
@@ -134,6 +134,16 @@ public class DateTime implements Comparable<DateTime> {
 		}
 
 		return this.after(first) && this.before(second);
+	}
+
+	public boolean dayBetween(DateTime first, DateTime second) {
+		if (first.compareTo(second) == 1) {
+			DateTime temp = first;
+			first = second;
+			second = temp;
+		}
+
+		return this.after(first) && this.before(second) || this.sameDay(first) || this.sameDay(second);
 	}
 
 	public int compareTo(DateTime that) {
