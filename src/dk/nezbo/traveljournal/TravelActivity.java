@@ -5,14 +5,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -138,6 +135,22 @@ public class TravelActivity extends Activity implements OnClickListener {
 			focus = (DateTime) travel.getStart().clone();
 		}
 
+		// days
+		TextView[] days = new TextView[] {
+				(TextView) findViewById(R.id.calMonday),
+				(TextView) findViewById(R.id.calTuesday),
+				(TextView) findViewById(R.id.calWednesday),
+				(TextView) findViewById(R.id.calThursday),
+				(TextView) findViewById(R.id.calFriday),
+				(TextView) findViewById(R.id.calSaturday),
+				(TextView) findViewById(R.id.calSunday) };
+		
+		for(int i = 0; i < days.length; i++){
+			String result = DateTime.getDayName(i);
+			System.out.println(i+":"+result);
+			days[i].setText(result);
+		}
+
 		// derping
 		GridView gridview = (GridView) findViewById(R.id.gvCalGrid);
 
@@ -149,9 +162,9 @@ public class TravelActivity extends Activity implements OnClickListener {
 
 		monthYear = (TextView) findViewById(R.id.tvCalMonthYear);
 		monthYear.setText(focus.asStringMonthYear());
-		
+
 		title = (TextView) findViewById(R.id.tvTravelTitle);
-		title.setText(travel.getTitle().equals("") ? "Untitled Travel" : travel.getTitle());
+		title.setText(travel.getTitle());
 
 		previous = (Button) findViewById(R.id.bCalPrevious);
 		next = (Button) findViewById(R.id.bCalNext);

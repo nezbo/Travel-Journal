@@ -138,8 +138,12 @@ public class CalendarAdapter extends BaseAdapter {
 	}
 
 	public void refreshDays() {
+		
+		System.out.println("Showing month for: "+focus);
+		
 		Calendar cal = focus.extractCalendar();
 		int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		cal.set(Calendar.DATE, 1);
 		firstDay = (int) cal.get(Calendar.DAY_OF_WEEK);
 
 		if (firstDay == 1) { // sunday
@@ -147,6 +151,8 @@ public class CalendarAdapter extends BaseAdapter {
 		} else {
 			firstDay -= 2;
 		}
+		
+		System.out.println("Skipped days: "+firstDay+" daysOfMonth: "+lastDay);
 
 		days = new String[lastDay + firstDay];
 

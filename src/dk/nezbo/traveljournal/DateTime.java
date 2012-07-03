@@ -1,6 +1,8 @@
 package dk.nezbo.traveljournal;
 
+import android.annotation.SuppressLint;
 import java.text.DateFormat;
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,6 +13,7 @@ public class DateTime implements Comparable<DateTime> {
 			"yyyy-MM-dd HH:mm:ss");
 	private static final DateFormat month = new SimpleDateFormat("MMMM");
 	private static final DateFormat time = new SimpleDateFormat("HH:mm");
+	private static final String[] daynames = new DateFormatSymbols().getShortWeekdays();
 
 	private Calendar cal = null;
 
@@ -51,7 +54,9 @@ public class DateTime implements Comparable<DateTime> {
 	}
 
 	public String getMonthText() {
-		return month.format(cal.getTime());
+		String result = month.format(cal.getTime());
+		
+		return result.substring(0,1).toUpperCase() + result.substring(1, result.length());
 	}
 
 	public int getDate() {
@@ -203,5 +208,10 @@ public class DateTime implements Comparable<DateTime> {
 	
 	public Calendar extractCalendar(){
 		return (Calendar) cal.clone();
+	}
+
+	public static String getDayName(int index) {
+		if(index == 6) return daynames[1];
+		return daynames[index+2];
 	}
 }

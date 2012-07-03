@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class Travel{
 	
+	public static String NO_TITLE = "Untitled Travel";
+	
 	private int id;
 	private DateTime start;
 	private DateTime end;
@@ -48,10 +50,16 @@ public class Travel{
 	}
 	
 	public void setTitle(String newTitle){
-		title = newTitle;
+		if(!newTitle.equals(NO_TITLE)){
+			title = newTitle;
+		}else{
+			title = "";
+		}
+		
 	}
 	
 	public String getTitle(){
+		if(title.equals("")) return Travel.NO_TITLE;
 		return title;
 	}
 	
