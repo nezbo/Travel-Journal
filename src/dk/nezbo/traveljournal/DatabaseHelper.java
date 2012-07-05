@@ -263,10 +263,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		db.close();
 		return result;
 	}
-
-	public ArrayList<AdvImage> getImages(int dayId) {
-		ArrayList<AdvImage> images = new ArrayList<AdvImage>();
-		
+	
+	public int[] getImageIds(int dayId){
 		SQLiteDatabase db = this.getReadableDatabase();
 		System.out.println("db created");
 		Cursor cur = db.rawQuery("SELECT id FROM Image WHERE dayId=?", new String[]{String.valueOf(dayId)});
@@ -276,7 +274,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		int ids[] = new int[cur.getCount()];
 		int index = 0;
 		
-		if(!cur.moveToFirst()) return images;
+		if(!cur.moveToFirst()) return ids;
 		boolean answer = true;
 		while(answer){
 			ids[index] = cur.getInt(0);
@@ -286,6 +284,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		}
 		cur.close();
 		db.close();
+		
+		return ids;
+	}
+
+	public ArrayList<AdvImage> getImages(int dayId) {
+		ArrayList<AdvImage> images = new ArrayList<AdvImage>();
+		
+		int[] ids = this.getImageIds(dayId);
 		
 		// load 
 		for(int i : ids){

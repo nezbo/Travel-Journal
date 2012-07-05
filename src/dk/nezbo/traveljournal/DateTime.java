@@ -209,6 +209,43 @@ public class DateTime implements Comparable<DateTime> {
 	public Calendar extractCalendar(){
 		return (Calendar) cal.clone();
 	}
+	
+	public int getDaysOfMonth(){
+		return cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+	}
+	
+	public int getDayOfWeek(){
+		int firstDay = (int) cal.get(Calendar.DAY_OF_WEEK);
+
+		if (firstDay == 1) { // sunday
+			firstDay = 6;
+		} else {
+			firstDay -= 2;
+		}
+		return firstDay;
+	}
+	
+	public static int getDaysBetween(DateTime first, DateTime second){
+		first = (DateTime) first.clone();
+
+		if(first.after(second)){
+			int counter = 0;
+			while(!first.sameDay(second)){
+				first.addDays(-1);
+				counter--;
+			}
+			return counter;
+		}else{
+			int counter = 0;
+			while(!first.sameDay(second)){
+				first.addDays(1);
+				counter++;
+			}
+			return counter;
+		}
+	}
+	
+	// static methods
 
 	public static String getDayName(int index) {
 		if(index == 6) return daynames[1];

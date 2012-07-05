@@ -66,6 +66,16 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/photo"
                 android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/tvCalDayImageCount"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:gravity="center_vertical"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="10dp" />
+"
         </TableRow>
     </TableLayout>
 

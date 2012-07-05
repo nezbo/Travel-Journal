@@ -66,6 +66,8 @@ public class CalendarAdapter extends BaseAdapter {
 		boolean end = false;
 		boolean text = false;
 		boolean images = false;
+		
+		int imageCount = 0;
 
 		if (position >= firstDay /* && !days[position].equals("") */) {
 			int day = Integer.parseInt(days[position]);
@@ -78,7 +80,8 @@ public class CalendarAdapter extends BaseAdapter {
 			end = travel.getEnd().sameDay(target);
 			if (travelday != null) {
 				text = !travelday.getText().equals("");
-				images = db.hasImages(travelday.getId());
+				imageCount = db.getImageIds(travelday.getId()).length;
+				images = imageCount > 0;
 			}
 		}
 
@@ -133,6 +136,8 @@ public class CalendarAdapter extends BaseAdapter {
 				text ? View.VISIBLE : View.INVISIBLE);
 		v.findViewById(R.id.ivCalDateImage4).setVisibility(
 				images ? View.VISIBLE : View.INVISIBLE);
+		
+		if(images) ((TextView)v.findViewById(R.id.tvCalDayImageCount)).setText(""+imageCount);
 
 		return v;
 	}
@@ -141,16 +146,10 @@ public class CalendarAdapter extends BaseAdapter {
 		
 		System.out.println("Showing month for: "+focus);
 		
-		Calendar cal = focus.extractCalendar();
-		int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-		cal.set(Calendar.DATE, 1);
-		firstDay = (int) cal.get(Calendar.DAY_OF_WEEK);
-
-		if (firstDay == 1) { // sunday
-			firstDay = 6;
-		} else {
-			firstDay -= 2;
-		}
+		//Calendar cal = focus.extractCalendar();
+		int lastDay = focus.getDaysOfMonth();
+		focus.setDate(1);
+		firstDay = focus.getDayOfWeek();
 		
 		System.out.println("Skipped days: "+firstDay+" daysOfMonth: "+lastDay);
 

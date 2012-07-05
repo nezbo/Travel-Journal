@@ -101,13 +101,13 @@ public class AdvImage {
 		// rotate?
 		bitmap = rotateImage(c, bitmap, rotate);
 
-		System.out.println("Bitmap loaded from file: size=" + bitmap.getWidth()
+		if(bitmap != null) System.out.println("Bitmap loaded from file: size=" + bitmap.getWidth()
 				+ "," + bitmap.getHeight());
 
 		System.gc();
 
 		// if rotation is needed, do it in worker thread for next time
-		if (rotate != 0) {
+		if (rotate != 0 && bitmap != null) {
 			Thread t = new Thread(new Runnable() {
 
 				public void run() {
