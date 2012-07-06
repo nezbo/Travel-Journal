@@ -59,7 +59,6 @@ public class Travel{
 	}
 	
 	public String getTitle(){
-		if(title.equals("")) return Travel.NO_TITLE;
 		return title;
 	}
 	

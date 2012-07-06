@@ -209,7 +209,7 @@ public class TravelDayActivity extends Activity implements OnItemClickListener {
 
 	private String createShareText() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Journal Entry:");
+		builder.append("Journal Entry:\n");
 		builder.append(today.getText());
 		builder.append("\n");
 		builder.append("\nHere's information about each picture in order:\n\n");

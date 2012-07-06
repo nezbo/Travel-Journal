@@ -164,7 +164,7 @@ public class TravelActivity extends Activity implements OnClickListener {
 		monthYear.setText(focus.asStringMonthYear());
 
 		title = (TextView) findViewById(R.id.tvTravelTitle);
-		title.setText(travel.getTitle());
+		updateTitle();
 
 		previous = (Button) findViewById(R.id.bCalPrevious);
 		next = (Button) findViewById(R.id.bCalNext);
@@ -212,11 +212,16 @@ public class TravelActivity extends Activity implements OnClickListener {
 
 						public void onClick(DialogInterface dialog, int which) {
 							travel.setTitle(input.getText().toString());
-							title.setText(travel.getTitle());
+							updateTitle();
 						}
 					});
 
 			alert.show();
 		}
+	}
+	
+	private void updateTitle(){
+		String titleS = travel.getTitle();
+		title.setText(title.equals("") ? Travel.NO_TITLE : titleS);
 	}
 }
