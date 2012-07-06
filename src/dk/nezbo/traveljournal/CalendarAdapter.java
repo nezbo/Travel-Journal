@@ -137,7 +137,7 @@ public class CalendarAdapter extends BaseAdapter {
 		v.findViewById(R.id.ivCalDateImage4).setVisibility(
 				images ? View.VISIBLE : View.INVISIBLE);
 		
-		if(images) ((TextView)v.findViewById(R.id.tvCalDayImageCount)).setText(""+imageCount);
+		((TextView)v.findViewById(R.id.tvCalDayImageCount)).setText(images ? ""+imageCount : "");
 
 		return v;
 	}

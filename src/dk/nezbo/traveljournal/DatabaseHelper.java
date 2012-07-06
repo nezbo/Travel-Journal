@@ -118,10 +118,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	}
 	
 	public Travel getCurrentTravel(){
-		DateTime now = new DateTime();
+		DateTime start = new DateTime().getBeginning();
+		DateTime end = start.getNextDay();
 		
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cur = db.rawQuery("SELECT id FROM Travel WHERE start <= ? AND end >= ?", new String[]{now.toString(), now.toString()});
+		Cursor cur = db.rawQuery("SELECT id FROM Travel WHERE start <= ? AND end >= ?", new String[]{end.toString(), start.toString()});
 		System.out.println(""+cur.getCount()+" matches for current Travel");
 		
 		if(!cur.moveToFirst()) return null; // no current travel
