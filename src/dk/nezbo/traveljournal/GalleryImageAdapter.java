@@ -40,7 +40,6 @@ public class GalleryImageAdapter extends BaseAdapter {
         ImageView imageView = new ImageView(mContext);
         Bitmap bitmap = images.get(position).getBitmap(mContext);
         imageView.setImageBitmap(bitmap);
-        //imageView.setImageResource(mImageIds[position]);
         
         imageView.setLayoutParams(new Gallery.LayoutParams(200, 150));
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);

@@ -39,6 +39,7 @@
             android:id="@+id/etImageText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:inputType="textCapSentences"
             android:layout_marginTop="5dp"
             android:layout_weight="2"
             android:gravity="top|left"

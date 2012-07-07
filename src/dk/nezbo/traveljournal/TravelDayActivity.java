@@ -69,6 +69,7 @@ public class TravelDayActivity extends Activity implements OnItemClickListener {
 
 	private void save() {
 		// values to TravelDay
+		text.clearFocus();
 		today.setText(text.getText().toString());
 
 		db.saveTravelDay(today);
@@ -163,7 +164,6 @@ public class TravelDayActivity extends Activity implements OnItemClickListener {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
 		super.onOptionsItemSelected(item);
 
 		switch (item.getItemId()) {
