@@ -3,7 +3,6 @@ package dk.nezbo.traveljournal;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,14 +15,19 @@ import android.provider.MediaStore.Images.Media;
 
 public class AdvImage {
 
+	private static final int IMAGE_SIZE = 1024;
+	private static final int THUMBNAIL_SIZE = 256;
+	
 	private int id;
 	private int dayId;
 	private String file;
-	private Bitmap bitmap;
 	private String title;
 	private String description;
 	private DateTime captureTime;
 	private Location loc;
+	
+	private Bitmap bitmap;
+	private Bitmap thumbnail;
 
 	public AdvImage(int id, int dayId, String file, DateTime captureTime,
 			String title, String desc) {
@@ -80,11 +84,8 @@ public class AdvImage {
 		this.loc = loc;
 		System.out.println("Image location set: " + loc.toString());
 	}
-
-	public Bitmap getBitmap(final Context c) {
-		if (bitmap != null)
-			return bitmap;
-
+	
+	private Bitmap loadScaledBitmap(final Context c, int maxWidth, int maxHeight, boolean asyncRotate){
 		final int rotate = necessaryRotation(c, file);
 		// if(rotate != 0) rotateImageFile(c, rotate);
 
@@ -92,9 +93,9 @@ public class AdvImage {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeFile(file, options);
-		options.inSampleSize = calcInSampleSize(options, 1024, 1024);
+		options.inSampleSize = calcInSampleSize(options, maxWidth, maxHeight);
 		options.inJustDecodeBounds = false;
-		bitmap = BitmapFactory.decodeFile(file, options);
+		Bitmap bitmap = BitmapFactory.decodeFile(file, options);
 		
 		System.out.println(getFilename());
 
@@ -107,7 +108,7 @@ public class AdvImage {
 		System.gc();
 
 		// if rotation is needed, do it in worker thread for next time
-		if (rotate != 0 && bitmap != null) {
+		if (rotate != 0 && bitmap != null && asyncRotate) {
 			Thread t = new Thread(new Runnable() {
 
 				public void run() {
@@ -144,6 +145,24 @@ public class AdvImage {
 			});
 			t.start();
 		}
+		return bitmap;
+	}
+	
+	public Bitmap getThumbnail(Context c){
+		if(thumbnail != null){
+			return thumbnail;
+		}
+		
+		thumbnail = loadScaledBitmap(c,AdvImage.THUMBNAIL_SIZE, AdvImage.THUMBNAIL_SIZE, false);
+		
+		return thumbnail;
+	}
+
+	public Bitmap getBitmap(Context c) {
+		if (bitmap != null)
+			return bitmap;
+
+		bitmap = loadScaledBitmap(c,AdvImage.IMAGE_SIZE,AdvImage.IMAGE_SIZE, true);
 
 		return bitmap;
 	}

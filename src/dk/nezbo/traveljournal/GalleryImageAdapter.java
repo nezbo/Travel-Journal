@@ -3,8 +3,6 @@ package dk.nezbo.traveljournal;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
 
-public class GalleryImageAdapter extends BaseAdapter {
+public class GalleryImageAdapter extends BaseAdapter implements Runnable {
     int mGalleryItemBackground;
     private Context mContext;
     
@@ -22,6 +20,8 @@ public class GalleryImageAdapter extends BaseAdapter {
         mContext = c;
         mGalleryItemBackground = R.color.blue;
         this.images = images;
+        
+        new Thread(this).start();
     }
 
     public int getCount() {
@@ -38,7 +38,7 @@ public class GalleryImageAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView = new ImageView(mContext);
-        Bitmap bitmap = images.get(position).getBitmap(mContext);
+        Bitmap bitmap = images.get(position).getThumbnail(mContext);
         imageView.setImageBitmap(bitmap);
         
         imageView.setLayoutParams(new Gallery.LayoutParams(200, 150));
@@ -47,4 +47,8 @@ public class GalleryImageAdapter extends BaseAdapter {
 
         return imageView;
     }
+
+	public void run() {
+		for(AdvImage i : images) i.getThumbnail(mContext);
+	}
 }
