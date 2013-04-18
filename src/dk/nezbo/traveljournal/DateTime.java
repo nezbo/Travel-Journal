@@ -1,6 +1,5 @@
 package dk.nezbo.traveljournal;
 
-import android.annotation.SuppressLint;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -11,6 +10,7 @@ public class DateTime implements Comparable<DateTime> {
 
 	private static final DateFormat formatter = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss");
+	private static final DateFormat exifFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
 	private static final DateFormat month = new SimpleDateFormat("MMMM");
 	private static final DateFormat time = new SimpleDateFormat("HH:mm");
 	private static final String[] daynames = new DateFormatSymbols().getShortWeekdays();
@@ -36,6 +36,28 @@ public class DateTime implements Comparable<DateTime> {
 	public DateTime() {
 		cal = Calendar.getInstance();
 	}
+	
+	private DateTime(Calendar cal){
+		this.cal = cal;
+	}
+	
+	// factory
+	
+	public static DateTime fromExifFormat(String exif){
+		try {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(exifFormat.parse(exif));
+			return new DateTime(cal);
+			
+		} catch (ParseException e) {
+			System.err.println("ERROR: DateTime couldn't be created from faulty EXIF string: "+exif);
+		} catch (NullPointerException e){
+			System.err.println("ERROR: No exif sting recieved, cant get time.");
+		}
+		return null;
+	}
+	
+	// methods
 
 	public int getYear() {
 		return cal.get(Calendar.YEAR);

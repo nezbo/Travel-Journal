@@ -1,7 +1,5 @@
 package dk.nezbo.traveljournal;
 
-import java.util.Calendar;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,6 +64,7 @@ public class CalendarAdapter extends BaseAdapter {
 		boolean end = false;
 		boolean text = false;
 		boolean images = false;
+		boolean withinTrip = false;
 		
 		int imageCount = 0;
 
@@ -82,6 +81,9 @@ public class CalendarAdapter extends BaseAdapter {
 				text = !travelday.getText().equals("");
 				imageCount = db.getImageIds(travelday.getId()).length;
 				images = imageCount > 0;
+				withinTrip = true;
+			}else if(target.dayBetween(travel.getStart(), travel.getEnd())){
+				withinTrip = true;
 			}
 		}
 
@@ -138,6 +140,8 @@ public class CalendarAdapter extends BaseAdapter {
 				images ? View.VISIBLE : View.INVISIBLE);
 		
 		((TextView)v.findViewById(R.id.tvCalDayImageCount)).setText(images ? ""+imageCount : "");
+		
+		v.setBackgroundResource(withinTrip ? R.drawable.gradientdarkblue : R.drawable.gradient);
 
 		return v;
 	}

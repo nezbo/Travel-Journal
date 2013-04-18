@@ -141,7 +141,7 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 
 			break;
 		case R.id.ib04: // bAllTravels
-
+			NezboUtils.goToTravels(this);
 			break;
 		}
 	}

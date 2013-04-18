@@ -55,6 +55,7 @@ public class TravelDayActivity extends Activity implements OnItemClickListener {
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
+		save();
 		super.onPause();
 		db.close();
 	}
@@ -131,9 +132,9 @@ public class TravelDayActivity extends Activity implements OnItemClickListener {
 
 				// copy image and save //
 
-				DateTime now = new DateTime();
-				AdvImage image = new AdvImage(0, today.getId(), null, now, "",
-						"");
+				DateTime time = NezboUtils.getCaptureTime(filePath);
+				AdvImage image = new AdvImage(0, today.getId(), null,
+						time == null ? new DateTime() : time, "", "");
 
 				File source = new File(filePath);
 				File destination = NezboUtils.generateFilePath(this, image);

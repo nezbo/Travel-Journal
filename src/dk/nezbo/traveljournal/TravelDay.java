@@ -1,7 +1,5 @@
 package dk.nezbo.traveljournal;
 
-import java.util.ArrayList;
-
 public class TravelDay {
 
 	private int id;

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/gradientdarkblue"
+    android:gravity="right"
+    android:orientation="horizontal"
+    android:padding="5dp"
+    android:weightSum="10" >
+
+    <TextView
+        android:id="@+id/travelItemTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="9"
+        android:gravity="center_vertical"
+        android:text="Travel Title"
+        android:textColor="@color/white"
+        android:textSize="32dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/travelItemStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Jan 1st (2012)"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/travelItemEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Feb 23rd (2012)"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+    </LinearLayout>
+
+</LinearLayout>

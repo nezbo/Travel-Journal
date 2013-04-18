@@ -2,9 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue"
+    android:background="@drawable/background"
     android:orientation="vertical"
     android:padding="5dp" >
+    
+        <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+
+    <LinearLayout
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
 
     <TextView
         android:id="@+id/tvImageTitle"
@@ -29,7 +37,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="@color/blue"
         android:orientation="vertical"
         android:weightSum="3" >
 
@@ -46,10 +53,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
-            android:inputType="textCapSentences"
             android:layout_weight="2"
             android:gravity="top|left"
-            android:hint="Image Description" />
+            android:hint="Image Description"
+            android:inputType="textCapSentences|textMultiLine"
+            android:scrollHorizontally="false"
+            android:scrollbars="vertical" />
     </LinearLayout>
 
 </LinearLayout>

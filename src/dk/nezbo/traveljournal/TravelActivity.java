@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +22,6 @@ public class TravelActivity extends Activity implements OnClickListener {
 	private DatabaseHelper db;
 
 	private CalendarAdapter adapter;
-	private Handler handler;
 
 	private TextView monthYear;
 	private Button previous;
@@ -157,7 +155,7 @@ public class TravelActivity extends Activity implements OnClickListener {
 		adapter = new CalendarAdapter(this, focus, travel);
 		gridview.setAdapter(adapter);
 
-		handler = new Handler();
+		//handler = new Handler();
 		// handler.post(calendarUpdater);
 
 		monthYear = (TextView) findViewById(R.id.tvCalMonthYear);
@@ -204,7 +202,8 @@ public class TravelActivity extends Activity implements OnClickListener {
 			alert.setTitle("Travel Title");
 
 			final EditText input = new EditText(this);
-			input.setText(travel.getTitle());
+			String title = travel.getTitle();
+			input.setText(title.equals(Travel.NO_TITLE) ? "" : title);
 			alert.setView(input);
 
 			alert.setPositiveButton("Ok",

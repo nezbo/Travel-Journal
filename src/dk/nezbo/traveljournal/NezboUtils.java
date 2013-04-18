@@ -7,6 +7,7 @@ import java.io.OutputStream;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -36,6 +37,11 @@ public class NezboUtils {
 		c.startActivity(next);
 	}
 	
+	public static void goToTravels(Context c){
+		Intent next = new Intent("dk.nezbo.traveljournal.TRAVELS");
+		c.startActivity(next);
+	}
+	
 	public static void copyFile(InputStream in, OutputStream out) throws IOException{
 		byte[] buffer = new byte[1024];
 		int read;
@@ -48,5 +54,16 @@ public class NezboUtils {
 		File path = new File(Environment.getExternalStorageDirectory(),
 				c.getPackageName());
 		return new File(path,image.getCaptureTime().toString().replace(':', '-') + ".png");
+	}
+	
+	public static DateTime getCaptureTime(String filepath){
+		try {
+			ExifInterface exif = new ExifInterface(filepath);
+			String time = exif.getAttribute(ExifInterface.TAG_DATETIME);
+			return DateTime.fromExifFormat(time);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

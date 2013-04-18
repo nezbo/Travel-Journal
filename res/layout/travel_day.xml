@@ -2,9 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue"
+    android:background="@drawable/background"
     android:orientation="vertical"
     android:padding="5dp" >
+
+    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+    <LinearLayout
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
 
     <TextView
         android:id="@+id/tvDayTitle"
@@ -19,7 +26,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blue"
         android:orientation="vertical"
         android:weightSum="100" >
 
@@ -28,10 +34,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="70"
-            android:inputType="textCapSentences"
             android:ems="10"
             android:gravity="top|left"
-            android:hint="Journal Text" />
+            android:hint="Journal Day Entry"
+            android:inputType="textCapSentences|textMultiLine"
+            android:scrollHorizontally="false"
+            android:scrollbars="vertical" />
 
         <Gallery
             android:id="@+id/galDayImages"
