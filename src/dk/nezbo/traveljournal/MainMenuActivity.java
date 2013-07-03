@@ -73,16 +73,17 @@ public class MainMenuActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
-		case 1:
+		case 1: // image captured
 			if (resultCode == RESULT_OK) {
 				final File file = getTempFile(this);
 
 				DateTime time = new DateTime();
 				TravelDay today = db.findOrCreateTravelDay(currentTravel, time);
+				double[] location = NezboUtils.getLastLocation(this);
+				
 				AdvImage image = new AdvImage(0, today.getId(), null, time, "",
-						"");
-				// ImageLocationFinder.initiate(this, image, 10); // get gps
-				// location in 10 seconds
+						"", location);
+				
 				File file2 = NezboUtils.generateFilePath(this, image);
 
 				boolean success = file.renameTo(file2);

@@ -43,7 +43,7 @@ public class GalleryImageAdapter extends BaseAdapter implements Runnable {
         
         imageView.setLayoutParams(new Gallery.LayoutParams(200, 150));
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        imageView.setBackgroundResource(mGalleryItemBackground);
+        imageView.setBackgroundResource(0);
 
         return imageView;
     }

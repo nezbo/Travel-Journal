@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Media;
@@ -24,24 +23,25 @@ public class AdvImage {
 	private String title;
 	private String description;
 	private DateTime captureTime;
-	private Location loc;
+	private double[] loc;
 	
 	private Bitmap bitmap;
 	private Bitmap thumbnail;
 
 	public AdvImage(int id, int dayId, String file, DateTime captureTime,
-			String title, String desc) {
+			String title, String desc, double[] location) {
 		this.id = id;
 		this.dayId = dayId;
 		this.file = file;
 		this.captureTime = captureTime;
 		this.title = title;
 		this.description = desc;
+		this.loc = location;
 	}
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new AdvImage(id, dayId, file, captureTime, title, description);
+		return new AdvImage(id, dayId, file, captureTime, title, description, new double[]{loc[0],loc[1]});
 	}
 
 	public int getId() {
@@ -76,13 +76,12 @@ public class AdvImage {
 		return description;
 	}
 
-	public Location getLocation() {
+	public double[] getLocation() {
 		return loc;
 	}
 
-	public void setLocation(Location loc) {
+	public void setLocation(double[] loc) {
 		this.loc = loc;
-		System.out.println("Image location set: " + loc.toString());
 	}
 	
 	private Bitmap loadScaledBitmap(final Context c, int maxWidth, int maxHeight, boolean asyncRotate){
@@ -239,7 +238,7 @@ public class AdvImage {
 	public String toString() {
 		return "[AdvImage: id=" + id + " dayId=" + dayId + " time="
 				+ captureTime.asStringDay() + " filename=" + file + " title="
-				+ title + " desc=" + description + "]";
+				+ title + " desc=" + description + " loc=" + loc[0] + "," +loc[1] + "]";
 	}
 
 	public void recycle() {

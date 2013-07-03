@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
 
-	private static final int VERSION = 13;
+	private static final int VERSION = 15;
 	private static final String dbName = "traveljournal";
 	
 	public DatabaseHelper(Context context) {
@@ -20,8 +20,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL("CREATE TABLE Travel (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, desc TEXT, start DATETIME, end DATETIME)");
-		db.execSQL("CREATE TABLE TravelDay (id INTEGER PRIMARY KEY AUTOINCREMENT, travelId INTEGER, day DATETIME, text TEXT)");
-		db.execSQL("CREATE TABLE Image (id INTEGER PRIMARY KEY AUTOINCREMENT, dayId INTEGER, file TEXT, title TEXT, desc TEXT, time DATETIME)");
+		db.execSQL("CREATE TABLE TravelDay (id INTEGER PRIMARY KEY AUTOINCREMENT, travelId INTEGER, day DATETIME, text TEXT, loclong REAL, loclat REAL)");
+		db.execSQL("CREATE TABLE Image (id INTEGER PRIMARY KEY AUTOINCREMENT, dayId INTEGER, file TEXT, title TEXT, desc TEXT, time DATETIME, loclong REAL, loclat REAL)");
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		// didn't exist yet, create and return
 		
 		SQLiteDatabase db = this.getWritableDatabase();
-		match = new TravelDay(-1, travel.getId(), date, "");
+		match = new TravelDay(-1, travel.getId(), date, "", new double[]{0.0,0.0});
 		ContentValues cv = new ContentValues();
 		cv.put("travelId", match.getTravelId());
 		cv.put("day", match.getDateTime().toString());
@@ -159,12 +159,12 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		DateTime end = date.getNextDay();
 		
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cur = db.rawQuery("SELECT id, travelId, day, text FROM TravelDay WHERE travelId=? AND day >= ? AND day < ?", new String[]{String.valueOf(travel.getId()),beginning.toString(),end.toString()});
+		Cursor cur = db.rawQuery("SELECT id, travelId, day, text, loclong, loclat FROM TravelDay WHERE travelId=? AND day >= ? AND day < ?", new String[]{String.valueOf(travel.getId()),beginning.toString(),end.toString()});
 		System.out.println(""+cur.getCount()+" results for TravelDay");
 		TravelDay result = null;
 		boolean lastAnswer = cur.moveToFirst();
 		if(lastAnswer){
-			result = new TravelDay(cur.getInt(0),cur.getInt(1),new DateTime(cur.getString(2)),cur.getString(3));
+			result = new TravelDay(cur.getInt(0),cur.getInt(1),new DateTime(cur.getString(2)),cur.getString(3), new double[]{cur.getDouble(4), cur.getDouble(5)});
 			System.out.println("TravelDay found: "+result.toString());
 		}
 		cur.close();
@@ -174,12 +174,12 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
 	public TravelDay getTravelDay(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cur = db.rawQuery("SELECT id, travelId, day, text FROM TravelDay WHERE id=?", new String[]{String.valueOf(id)});
+		Cursor cur = db.rawQuery("SELECT id, travelId, day, text, loclong, loclat FROM TravelDay WHERE id=?", new String[]{String.valueOf(id)});
 		if(!cur.moveToFirst()){
 			System.out.println("TravelDay not found by id");
 			return null;
 		}
-		TravelDay result = new TravelDay(cur.getInt(0),cur.getInt(1),new DateTime(cur.getString(2)),cur.getString(3));
+		TravelDay result = new TravelDay(cur.getInt(0),cur.getInt(1),new DateTime(cur.getString(2)),cur.getString(3), new double[]{cur.getDouble(4), cur.getDouble(5)});
 		System.out.println("TravelDay found by id: "+result.toString());
 		cur.close();
 		db.close();
@@ -190,6 +190,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put("text", today.getText());
+		cv.put("loclong", today.getLocation()[0]);
+		cv.put("loclat", today.getLocation()[1]);
 		db.update("TravelDay", cv, "id=?", new String[]{String.valueOf(today.getId())});
 		System.out.println("TravelDay saved: "+today.toString());
 		db.close();
@@ -203,6 +205,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		cv.put("title", image.getTitle());
 		cv.put("desc", image.getDescription());
 		cv.put("time", image.getCaptureTime().toString());
+		cv.put("loclong", ""+image.getLocation()[0]);
+		cv.put("loclat", ""+image.getLocation()[1]);
 		db.insert("Image", null, cv);
 		System.out.println("New Image saved: "+image.toString());
 		db.close();
@@ -218,6 +222,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 		cv.put("title", image.getTitle());
 		cv.put("desc", image.getDescription());
 		cv.put("time", image.getCaptureTime().toString());
+		cv.put("loclong", ""+image.getLocation()[0]);
+		cv.put("loclat", ""+image.getLocation()[1]);
 		int rows = db.update("Image", cv, "id=?", new String[]{String.valueOf(image.getId())});
 		System.out.println("Image saved: "+image.toString()+" ("+rows+" affected)");
 		db.close();
@@ -232,7 +238,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	}
 	
 	private int getImageId(AdvImage image){
-		SQLiteDatabase db = this.getReadableDatabase();
+		SQLiteDatabase db = this.getReadableDatabase(); // location not included in search due to type
 		Cursor cur = db.rawQuery("SELECT id FROM Image WHERE dayId=? AND file=? AND title=? AND desc=? AND time=?", new String[]{String.valueOf(image.getTravelDayId()),image.getFilename(),image.getTitle(),image.getDescription(),image.getCaptureTime().toString()});
 		if(!cur.moveToFirst()){
 			System.out.println("Image not found by content");
@@ -251,14 +257,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 	
 	public AdvImage getImage(int id){
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cur = db.rawQuery("SELECT id, dayId, file, title, desc, time FROM Image WHERE id=?", new String[]{String.valueOf(id)});
+		Cursor cur = db.rawQuery("SELECT id, dayId, file, title, desc, time, loclong, loclat FROM Image WHERE id=?", new String[]{String.valueOf(id)});
 		if(!cur.moveToFirst()){
 			System.out.println("Image not found by id");
 			cur.close();
 			db.close();
 			return null;
 		}
-		AdvImage result = new AdvImage(cur.getInt(0),cur.getInt(1),cur.getString(2),new DateTime(cur.getString(5)),cur.getString(3),cur.getString(4));
+		AdvImage result = new AdvImage(cur.getInt(0),cur.getInt(1),cur.getString(2),new DateTime(cur.getString(5)),cur.getString(3),cur.getString(4), new double[]{cur.getDouble(6),cur.getDouble(7)});
 		System.out.println("Image found by id: "+result.toString());
 		cur.close();
 		db.close();

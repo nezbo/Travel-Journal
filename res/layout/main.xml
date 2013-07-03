@@ -19,7 +19,8 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="150dp"
-        android:src="@drawable/ic_launcher" />
+        android:scaleType="center"
+        android:src="@drawable/today" />
 
     <ImageButton
         android:id="@+id/ib02"
@@ -28,7 +29,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@id/ib01"
         android:layout_marginRight="50dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/camera" />
 
     <TextView
         android:id="@+id/tv1"
@@ -59,7 +60,7 @@
         android:layout_alignLeft="@id/ib01"
         android:layout_below="@id/ib01"
         android:layout_marginTop="100dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/travel" />
 
     <ImageButton
         android:id="@+id/ib04"
@@ -68,7 +69,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@id/ib03"
         android:layout_marginRight="50dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/travels" />
 
     <TextView
         android:id="@+id/tvCurrent"

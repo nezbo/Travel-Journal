@@ -6,13 +6,14 @@ public class TravelDay {
 	private int travelId;
 	private final DateTime day;
 	private String text;
-	//TODO: Geo location
+	private double[] loc;
 	
-	public TravelDay(int id, int travelId, DateTime day, String text){
+	public TravelDay(int id, int travelId, DateTime day, String text, double[] location){
 		this.id = id;
 		this.travelId = travelId;
 		this.day = day;
 		this.text = text;
+		this.loc = location;
 	}
 	
 	public int getId(){
@@ -35,7 +36,15 @@ public class TravelDay {
 		return day;
 	}
 	
+	public void setLocation(double[] location){
+		this.loc = location;
+	}
+	
+	public double[] getLocation(){
+		return loc;
+	}
+	
 	public String toString(){
-		return "[TravelDay: id="+(id > 0 ? ""+id : "?")+" tId="+travelId+" day="+day.asStringDay()+" text="+text+"]";
+		return "[TravelDay: id="+(id > 0 ? ""+id : "?")+" tId="+travelId+" day="+day.asStringDay()+" text="+text + " loc=" + loc[0] + "," +loc[1] +"]";
 	}
 }

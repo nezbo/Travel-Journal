@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,10 +20,12 @@ import android.widget.TextView;
 
 public class ImageActivity extends Activity implements OnClickListener {
 
+	private Context c;
 	private DatabaseHelper db;
 	private AdvImage thisImage;
 
 	private ImageView imageView;
+	private ImageView compass;
 	private TextView title;
 	private TextView time;
 	private EditText description;
@@ -67,6 +70,7 @@ public class ImageActivity extends Activity implements OnClickListener {
 	}
 
 	private void init() {
+		this.c = this;
 		db = new DatabaseHelper(this);
 
 		// bundle
@@ -78,6 +82,7 @@ public class ImageActivity extends Activity implements OnClickListener {
 		title = (TextView) findViewById(R.id.tvImageTitle);
 		time = (TextView) findViewById(R.id.tvImageTime);
 		description = (EditText) findViewById(R.id.etImageText);
+		compass = (ImageView)findViewById(R.id.ivImageCompass);
 
 		// content
 		imageView.setImageBitmap(thisImage.getBitmap(this));
@@ -88,6 +93,31 @@ public class ImageActivity extends Activity implements OnClickListener {
 		time.setText(thisImage.getCaptureTime().asStringLong());
 
 		title.setOnClickListener(this);
+		updateCompass();
+	}
+	
+	private void updateCompass(){
+		if(thisImage.getLocation()[0] > 0){ // has location
+			compass.setImageResource(R.drawable.compass128);
+			compass.setOnClickListener(new OnClickListener() {
+				
+				public void onClick(View v) {
+					double[] loc = thisImage.getLocation();
+					NezboUtils.goToMap(c,loc);
+				}
+			});
+		}else{ // doesnt have location
+			compass.setImageResource(R.drawable.compass_target128);
+			compass.setOnClickListener(new OnClickListener(){
+
+				public void onClick(View v) {
+					thisImage.setLocation(NezboUtils.getLastLocation(c));
+					save();
+					updateCompass();
+				}
+				
+			});
+		}
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,17 +19,21 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.Gallery;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class TravelDayActivity extends Activity implements OnItemClickListener {
 
+	private Context c = this;
 	private TravelDay today;
 	private DatabaseHelper db;
 
+	private ImageView compass;
 	private TextView title;
 	private EditText text;
 	private Gallery gallery;
@@ -86,6 +91,7 @@ public class TravelDayActivity extends Activity implements OnItemClickListener {
 		today = db.getTravelDay(traveldayId);
 		this.images = db.getImages(today.getId());
 
+		compass = (ImageView) findViewById(R.id.ivDayCompass);
 		title = (TextView) findViewById(R.id.tvDayTitle);
 		text = (EditText) findViewById(R.id.etDayText);
 		gallery = (Gallery) findViewById(R.id.galDayImages);
@@ -95,6 +101,33 @@ public class TravelDayActivity extends Activity implements OnItemClickListener {
 		// testing
 		title.setText(today.getDateTime().asStringDay());
 		text.setText(today.getText());
+		
+		// compass
+		updateCompass();
+	}
+	
+	private void updateCompass(){
+		if(today.getLocation()[0] > 0){ // has location
+			compass.setImageResource(R.drawable.compass128);
+			compass.setOnClickListener(new OnClickListener() {
+				
+				public void onClick(View v) {
+					double[] loc = today.getLocation();
+					NezboUtils.goToGoogleMaps(c, loc);
+				}
+			});
+		}else{ // doesnt have location
+			compass.setImageResource(R.drawable.compass_target128);
+			compass.setOnClickListener(new OnClickListener(){
+
+				public void onClick(View v) {
+					today.setLocation(NezboUtils.getLastLocation(c));
+					save();
+					updateCompass();
+				}
+				
+			});
+		}
 	}
 
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -134,7 +167,7 @@ public class TravelDayActivity extends Activity implements OnItemClickListener {
 
 				DateTime time = NezboUtils.getCaptureTime(filePath);
 				AdvImage image = new AdvImage(0, today.getId(), null,
-						time == null ? new DateTime() : time, "", "");
+						time == null ? new DateTime() : time, "", "", new double[]{0.0,0.0});
 
 				File source = new File(filePath);
 				File destination = NezboUtils.generateFilePath(this, image);
