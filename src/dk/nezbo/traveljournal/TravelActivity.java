@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -202,6 +203,7 @@ public class TravelActivity extends Activity implements OnClickListener {
 			alert.setTitle("Travel Title");
 
 			final EditText input = new EditText(this);
+			input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 			String title = travel.getTitle();
 			input.setText(title.equals(Travel.NO_TITLE) ? "" : title);
 			alert.setView(input);
@@ -216,6 +218,7 @@ public class TravelActivity extends Activity implements OnClickListener {
 					});
 
 			alert.show();
+			NezboUtils.showKeyboard(input, this);
 		}
 	}
 	

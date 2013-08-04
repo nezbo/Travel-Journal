@@ -165,9 +165,10 @@ public class TravelDayActivity extends Activity implements OnItemClickListener {
 
 				// copy image and save //
 
-				DateTime time = NezboUtils.getCaptureTime(filePath);
+				DateTime time = NezboUtils.getImageCaptureTime(filePath);
+				double[] location = NezboUtils.getImageLocation(filePath);
 				AdvImage image = new AdvImage(0, today.getId(), null,
-						time == null ? new DateTime() : time, "", "", new double[]{0.0,0.0});
+						time == null ? new DateTime() : time, "", "", location);
 
 				File source = new File(filePath);
 				File destination = NezboUtils.generateFilePath(this, image);

@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -178,6 +179,7 @@ public class ImageActivity extends Activity implements OnClickListener {
 			// alert.setMessage("Message");
 
 			final EditText input = new EditText(this);
+			input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 			input.setText(thisImage.getTitle());
 			alert.setView(input);
 
@@ -191,6 +193,7 @@ public class ImageActivity extends Activity implements OnClickListener {
 					});
 
 			alert.show();
+			NezboUtils.showKeyboard(input, c);
 		}
 	}
 

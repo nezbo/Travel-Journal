@@ -15,6 +15,10 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.View;
+import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 public class NezboUtils {
 
@@ -76,7 +80,7 @@ public class NezboUtils {
 		return new File(path,image.getCaptureTime().toString().replace(':', '-') + ".png");
 	}
 	
-	public static DateTime getCaptureTime(String filepath){
+	public static DateTime getImageCaptureTime(String filepath){
 		try {
 			ExifInterface exif = new ExifInterface(filepath);
 			String time = exif.getAttribute(ExifInterface.TAG_DATETIME);
@@ -85,6 +89,62 @@ public class NezboUtils {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static double[] getImageLocation(String filepath){
+		ExifInterface exif;
+		try {
+			exif = new ExifInterface(filepath);
+			String LATITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+			String LATITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+			String LONGITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+			String LONGITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+			
+			double[] result = new double[2];
+			
+			// in case of no data
+			if(LATITUDE == null || LATITUDE_REF == null || LONGITUDE == null || LONGITUDE_REF == null) return new double[]{0.0,0.0};
+			
+			if(LATITUDE_REF.equals("N")){
+				result[1] = convertToDegree(LATITUDE);
+			}else{
+				result[1] = 0 - convertToDegree(LATITUDE);
+			}
+			
+			if(LONGITUDE_REF.equals("E")){
+				result[0] = convertToDegree(LONGITUDE);
+			}else{
+				result[0] = 0 - convertToDegree(LONGITUDE);
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private static double convertToDegree(String stringDMS){
+		Double result = null;
+		String[] DMS = stringDMS.split(",", 3);
+
+		String[] stringD = DMS[0].split("/", 2);
+		Double D0 = Double.valueOf(stringD[0]);
+		Double D1 = Double.valueOf(stringD[1]);
+		Double FloatD = D0/D1;
+
+		String[] stringM = DMS[1].split("/", 2);
+		Double M0 = Double.valueOf(stringM[0]);
+		Double M1 = Double.valueOf(stringM[1]);
+		Double FloatM = M0/M1;
+
+		String[] stringS = DMS[2].split("/", 2);
+		Double S0 = Double.valueOf(stringS[0]);
+		Double S1 = Double.valueOf(stringS[1]);
+		Double FloatS = S0/S1;
+
+		result = Double.valueOf(FloatD + (FloatM/60) + (FloatS/3600));
+
+		return result.doubleValue();
 	}
 	
 	public static double[] getLastLocation(Context c){
@@ -103,5 +163,19 @@ public class NezboUtils {
 			gps[1] = l.getLongitude();
 		}
 		return gps;
+	}
+	
+	public static void showKeyboard(final EditText editText, final Context c){
+	    editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+	        public void onFocusChange(View v, boolean hasFocus) {
+	            editText.post(new Runnable() {
+	                public void run() {
+	                    InputMethodManager inputMethodManager= (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+	                    inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+	                }
+	            });
+	        }
+	    });
+	    editText.requestFocus();
 	}
 }
